@@ -12,7 +12,7 @@ cd mithril-seed
 npm install -g bower gulp http-server
 npm install
 bower install
-git compile
+gulp compile
 http-server build/public
 ```
 

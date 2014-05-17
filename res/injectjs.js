@@ -13,14 +13,13 @@ function error(context, err) {
 // ignore _* files
 // for each file, scan for INJECT('filepath')
 // read file contents, continue scanning, check for circular
+// cache _* files
 
-function inject(baseDir) {
+function inject(options) {
 
-  baseDir = baseDir || '.';
-
-  if (typeof baseDir !== 'string') {
-    throw new Error('Invalid baseDir');
-  }
+  options = options || {};
+  if (options.cache === undefined) options.cache = false;
+  if (options.keyword === undefined) options.keyword = 'INJECT';
 
   return through.obj(function(file, enc, cb) {
     var context = this;
@@ -41,9 +40,13 @@ function inject(baseDir) {
       return cb();
     }
 
+    // for (var i in file) {
+    //   console.log(i, file[i]);
+    // }
+
     function exec(s, stack) {
       var result = '';
-      var r = /INJECT *\( *['"]([^'"]*)['"] *\) *;?/g;
+      var r = new RegExp(options.keyword + ' *\\( *[\'"]([^\'"]*)[\'"] *\\) *;?', 'g');
       var m = r.exec(s);
       while (m) {
         index = m.index;
@@ -59,7 +62,7 @@ function inject(baseDir) {
       basename = basename[0] === '_'? basename : '_' + basename;
       basename = path.extname(basename) === 'jsx'? basename : basename + '.jsx';
 
-      var filepath = path.join(baseDir, path.dirname(relpath), basename);
+      var filepath = path.join(file.base || file.cwd, path.dirname(relpath), basename);
       var newStack = stack.concat([filepath]);
 
       if (stack.indexOf(filepath) >= 0) {
@@ -92,9 +95,5 @@ function inject(baseDir) {
     cb();
   });
 }
-
-inject.watch = function(glob, task) {
-
-};
 
 module.exports = inject;

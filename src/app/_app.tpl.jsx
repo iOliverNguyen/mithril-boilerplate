@@ -1,6 +1,6 @@
 <div>
   <form>
-    <input placeholder="Search..." onchange={m.withAttr('value', ctrl.filterText)} value={ctrl.filterText()}/>
+    <input placeholder="Search..." onkeyup={m.withAttr('value', ctrl.filterText)} value={ctrl.filterText()}/>
     <p>
       <input type="checkbox" onchange={m.withAttr('checked', ctrl.inStockOnly)}/>
       Only show products in stock

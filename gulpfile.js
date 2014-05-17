@@ -136,7 +136,7 @@ gulp.task('compileStyles', function(cb) {
 // Combine *.jsx to build/src/app
 gulp.task('buildAppScriptsInject', function(cb) {
   gulp.src(appFiles.jsx, {base: 'src/app'})
-    .pipe(injectjs('src/app'))
+    .pipe(injectjs())
     .pipe(plugins.size({showFiles: true}))
     .pipe(gulp.dest(path.join(configs.buildSrc, 'app')))
     .on('end', cb || function(){})
@@ -307,12 +307,29 @@ gulp.task('compile', function(cb) {
     cb);
 });
 
+gulp.task('default', ['compile']);
+
 // Tasks to run whenever a source file changes
 gulp.task('watch', function(cb) {
+  // build dependence tree
+  // pass through changed files ()
+  // remember import files
+  // second run: only process changed file
+  // options: catch: false
 
+  gulp.watch('src/app/**/*.jsx')
+    .pipe(plugins.injectjs())
+    .pipe();
 });
 
 // Tasks to run whenever a test file changes
 gulp.task('watchtest', function() {
 
 });
+
+// Any file added or removed: indexHtml
+// root: copy, cache
+// jsx: injectjs, wrap require...
+// assets: copy, cache
+// scss: app.css
+// vendor.scss: vendor

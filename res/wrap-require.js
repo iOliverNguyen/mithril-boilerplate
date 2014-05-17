@@ -4,7 +4,7 @@ var through = require('through2');
 
 var pluginName = 'wrap-require';
 
-function wrap(baseDir) {
+function wrap(options) {
 
   return through.obj(function(file, enc, cb) {
     if (file.isNull()) {
@@ -29,7 +29,7 @@ function wrap(baseDir) {
       return s;
     }
 
-    var id = path.relative(baseDir,
+    var id = path.relative(file.base || file.cwd,
       path.dirname(file.path) + '/' + path.basename(file.path, '.js'));
     var str = file.contents.toString();
     try {

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "devDependencies": {
     "mithril": "~0.1.12",
-    "min-require": "~0.1.0",
+    "min-require": "~0.1.1",
     "bootstrap": "~3.1.1",
     "bootstrap-sass": "~3.0.2"
   }

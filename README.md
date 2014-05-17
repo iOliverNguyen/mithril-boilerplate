@@ -65,17 +65,17 @@ I will support these tasks in next release.
 
 * Each `.jsx` file inside `src/app` without `_` prefix will become a module.
 
-  For example, `src/app/app.jsx` is compile to module `app` and `src/app/home/home.jsx` is `home/home`.
+  For example, `src/app/app.jsx` is compiled to module `app` and `src/app/home/home.jsx` to `home/home`.
 
   Files with `_` prefix are used to inject into other files and will not become a module.
 
-* A module can be required by `require(<module-id>`.
+* A module can be required by `require(<module-id>)`.
 
   For example, `require('app')` or `require('home/home')`.
 
 * Main module is `main` (`src/app/main.jsx`).
 
-  Note that if a module is not required (directly or indirectly) by `main.jsx`, its code will not run.
+  Note that if a module is not required (directly or indirectly) by `main`, its code will not run.
 
 * Include file by `INJECT('<file-id>')`.
 

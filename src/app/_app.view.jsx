@@ -29,5 +29,5 @@ app.rows = function(ctrl) {
 };
 
 app.view = function(ctrl) {
-  return INJECT('app.tpl');
+  return INCLUDE('app.tpl');
 };

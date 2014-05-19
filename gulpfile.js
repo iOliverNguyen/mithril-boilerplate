@@ -63,7 +63,7 @@ var modes = [consts.development, consts.production];
 // Implement tasks
 
 var gulp = require('gulp');
-var injectjs = require('./res/injectjs');
+var includejs = require('./res/includejs');
 var plugins = require('gulp-load-plugins')();
 var runSequence = require('run-sequence');
 var wrapRequire = require('./res/wrap-require');
@@ -131,7 +131,7 @@ gulp.task('compileStyles', function(cb) {
 // Combine *.jsx to build/src/app
 gulp.task('buildAppScriptsInject', function(cb) {
   gulp.src(appFiles.jsx, {base: 'src/app'})
-    .pipe(injectjs())
+    .pipe(includejs())
     .pipe(plugins.size({showFiles: true}))
     .pipe(gulp.dest(path.join(configs.buildSrc, 'app')))
     .on('end', cb || function(){})
@@ -313,7 +313,7 @@ gulp.task('watch', function(cb) {
   // options: catch: false
 
   gulp.watch('src/app/**/*.jsx')
-    .pipe(plugins.injectjs())
+    .pipe(plugins.includejs())
     .pipe();
 });
 
@@ -324,7 +324,7 @@ gulp.task('watchtest', function() {
 
 // Any file added or removed: indexHtml
 // root: copy, cache
-// jsx: injectjs, wrap require...
+// jsx: includejs, wrap require...
 // assets: copy, cache
 // scss: app.css
 // vendor.scss: vendor

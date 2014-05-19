@@ -1,6 +1,6 @@
 var home = {};
 
-INJECT('home/home.view')
+INCLUDE('home/home.view')
 
 exports.home = home;
 exports.view = home.view;

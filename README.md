@@ -7,8 +7,8 @@
 Make sure you have `node` and `npm` installed. Then
 
 ```
-git clone https://github.com/ng-vu/mithril-seed.git
-cd mithril-seed
+git clone https://github.com/ng-vu/mithril-boilerplate.git
+cd mithril-boilerplate
 npm install -g bower gulp http-server
 npm install
 bower install

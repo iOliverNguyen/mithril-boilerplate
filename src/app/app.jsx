@@ -11,6 +11,6 @@ app.controller = function() {
   this.inStockOnly = m.prop(false);
 };
 
-INJECT('app.view');
+INCLUDE('app.view');
 
 m.module(document.body, app);

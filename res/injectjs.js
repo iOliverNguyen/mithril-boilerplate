@@ -3,7 +3,7 @@ var path = require('path');
 var through = require('through2');
 var fs = require('fs');
 
-var pluginName = 'injectjs';
+var pluginName = 'includejs';
 var blue = gutil.colors.blue;
 
 function error(context, err) {
@@ -11,15 +11,15 @@ function error(context, err) {
 }
 
 // ignore _* files
-// for each file, scan for INJECT('filepath')
+// for each file, scan for INCLUDE('filepath')
 // read file contents, continue scanning, check for circular
 // cache _* files
 
-function inject(options) {
+function include(options) {
 
   options = options || {};
   if (options.cache === undefined) options.cache = false;
-  if (options.keyword === undefined) options.keyword = 'INJECT';
+  if (options.keyword === undefined) options.keyword = 'INCLUDE';
 
   return through.obj(function(file, enc, cb) {
     var context = this;
@@ -39,10 +39,6 @@ function inject(options) {
     if (filename[0] === '_') {
       return cb();
     }
-
-    // for (var i in file) {
-    //   console.log(i, file[i]);
-    // }
 
     function exec(s, stack) {
       var result = '';
@@ -96,4 +92,4 @@ function inject(options) {
   });
 }
 
-module.exports = inject;
+module.exports = include;

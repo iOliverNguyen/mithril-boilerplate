@@ -24,9 +24,8 @@ var configs = {
   compilePublic: 'bin/public/',
   compileSrc: 'bin/public/src/',
 
-  sassIncludePaths: ['src/sass', '.'],
-  appSass: 'src/sass/app.scss',
-  vendorSass: 'src/sass/vendor.scss',
+  appLess: 'src/less/app.less',
+  vendorLess: 'src/less/vendor.less',
 
   mainScripts: ['app/main.js']
 };
@@ -39,14 +38,14 @@ var appFiles = {
   js: ['src/app/**/*.js', '!src/app/**/*.spec.js'],
   jsunit: ['src/app/**/*.spec.js'],
   jsx: ['src/app/**/*.jsx'],
-  sass: ['src/sass/**/*.scss', '!src/sass/**/vendor.scss'],
+  less: ['src/less/**/*.less', '!' + configs.vendorLess],
   tpl: ['src/app/**/*.tpl.html'],
   root: ['LICENSE', 'README.md', 'public/**/*.*']
 };
 
 var vendorFiles = {
   assets: [
-    'vendor/bootstrap-sass/fonts/*.*'
+    'vendor/bootstrap/fonts/*.*'
   ],
   js: [
     'vendor/mithril/mithril.js',
@@ -91,13 +90,9 @@ function mainScripts(basepath) {
   });
 }
 
-function buildStyles(src, destFile, options, cb) {
+function buildStyles(src, options, cb) {
   gulp.src(src)
-    .pipe(plugins.plumber())
-    .pipe(plugins.sass({
-      includePaths: configs.sassIncludePaths,
-      sourceComments: options.sourcemap? 'map' : '',
-    }))
+    .pipe(plugins.less(options))
     .pipe(plugins.size({showFiles: true}))
     .pipe(gulp.dest(configs.buildAssets))
     .on('end', cb || function(){})
@@ -106,12 +101,12 @@ function buildStyles(src, destFile, options, cb) {
 
 // Generate build/public/assets/app-***.css
 gulp.task('buildAppStyles',function(cb) {
-  buildStyles(configs.appSass, configs.buildAppCss, {sourcemap:true}, cb);
+  buildStyles(configs.appLess, {sourceMap:true}, cb);
 });
 
 // Generate build/public/assets/vendor-***.css
 gulp.task('buildVendorStyles', function(cb) {
-  buildStyles(configs.vendorSass, configs.buildVendorCss, {sourcemap:false}, cb);
+  buildStyles(configs.vendorLess, {sourceMap:false}, cb);
 });
 
 // Generate bin/public/assets/main-***.css

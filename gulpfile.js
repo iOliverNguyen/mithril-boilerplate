@@ -90,6 +90,7 @@ function mainScripts(basepath) {
 
 function buildStyles(src, options, cb) {
   gulp.src(src)
+    .pipe(plugins.plumber())
     .pipe(plugins.less(options))
     .pipe(plugins.size({showFiles: true}))
     .pipe(gulp.dest(configs.buildAssets))
@@ -116,6 +117,7 @@ gulp.task('compileStyles', function(cb) {
       path.join(configs.buildAssets, configs.buildVendorCss),
       path.join(configs.buildAssets, configs.buildAppCss),
     ])
+      .pipe(plugins.plumber())
       .pipe(plugins.concat(configs.compileMainCss))
       .pipe(plugins.minifyCss())
       .pipe(plugins.streamify(plugins.rev()))
@@ -129,7 +131,8 @@ gulp.task('compileStyles', function(cb) {
 // Combine *.jsx to build/src/app
 gulp.task('buildAppScriptsInject', function(cb) {
   gulp.src(appFiles.jsx, {base: 'src/app'})
-    .pipe(plugins.includeJs())
+    .pipe(plugins.plumber())
+    .pipe(plugins.includeJs({ext:'jsx'}))
     .pipe(plugins.size({showFiles: true}))
     .pipe(gulp.dest(path.join(configs.buildSrc, 'app')))
     .on('end', cb || function(){})
@@ -140,6 +143,7 @@ gulp.task('buildAppScriptsInject', function(cb) {
 gulp.task('buildAppScriptsMsx', function(cb) {
   var appPath = path.join(configs.buildSrc, 'app');
   gulp.src(appPath + '/**/*.jsx', {base: appPath})
+    .pipe(plugins.plumber())
     .pipe(plugins.msx())
     // .pipe(plugins.sweetjs({modules: ['./res/template-compiler.sjs']}))
     .pipe(plugins.wrapRequire(appPath))
@@ -181,6 +185,7 @@ gulp.task('compileScripts', function(cb) {
       [path.join(configs.buildSrc, 'app/**/*.js')]
     );
     gulp.src(glob)
+      .pipe(plugins.plumber())
       .pipe(plugins.concat(configs.compileMainJs))
       .pipe(plugins.insert.append('\n\nrequire(\'main\');\n'))
       .pipe(plugins.streamify(plugins.uglify({mangle: true})))
@@ -228,6 +233,7 @@ function injectHtml(tag, path, glob) {
 
 gulp.task('buildIndexHtml', function(cb) {
   gulp.src(appFiles.html)
+    .pipe(plugins.plumber())
     .pipe(injectHtml('vendor', configs.buildPublic,
       [
         path.join(configs.buildAssets, configs.buildVendorCss),
@@ -249,6 +255,7 @@ gulp.task('buildIndexHtml', function(cb) {
 
 gulp.task('compileIndexHtml', function(cb) {
   gulp.src(appFiles.html)
+    .pipe(plugins.plumber())
     .pipe(injectHtml('app', configs.compilePublic,
     [
       path.join(configs.compileAssets, revName(configs.compileMainCss)),
@@ -311,7 +318,7 @@ gulp.task('watch', function(cb) {
   // options: catch: false
 
   gulp.watch('src/app/**/*.jsx')
-    .pipe(plugins.includejs())
+    .pipe(plugins.includejs({ext:'jsx'}))
     .pipe();
 });
 

@@ -22,7 +22,7 @@
     "gulp": "^3.6.2",
     "gulp-clean": "^0.2.4",
     "gulp-concat": "^2.2.0",
-    "gulp-include-js": "^0.1.0",
+    "gulp-include-js": "git://github.com/ng-vu/gulp-include-js.git",
     "gulp-inject": "^0.4.1",
     "gulp-insert": "^0.3.0",
     "gulp-less": "^1.2.3",
@@ -43,6 +43,7 @@
     "karma-phantomjs-launcher": "^0.1.4",
     "karma-spec-reporter": "0.0.12",
     "run-sequence": "^0.3.6",
-    "through2": "^0.4.1"
+    "through2": "^0.4.1",
+    "gulp-plumber": "^0.6.1"
   }
 }

@@ -63,10 +63,8 @@ var modes = [consts.development, consts.production];
 // Implement tasks
 
 var gulp = require('gulp');
-var includejs = require('./res/includejs');
 var plugins = require('gulp-load-plugins')();
 var runSequence = require('run-sequence');
-var wrapRequire = require('./res/wrap-require');
 
 var colors = plugins.util.colors;
 var log = plugins.util.log;
@@ -131,7 +129,7 @@ gulp.task('compileStyles', function(cb) {
 // Combine *.jsx to build/src/app
 gulp.task('buildAppScriptsInject', function(cb) {
   gulp.src(appFiles.jsx, {base: 'src/app'})
-    .pipe(includejs())
+    .pipe(plugins.includeJs())
     .pipe(plugins.size({showFiles: true}))
     .pipe(gulp.dest(path.join(configs.buildSrc, 'app')))
     .on('end', cb || function(){})
@@ -144,7 +142,7 @@ gulp.task('buildAppScriptsMsx', function(cb) {
   gulp.src(appPath + '/**/*.jsx', {base: appPath})
     .pipe(plugins.msx())
     // .pipe(plugins.sweetjs({modules: ['./res/template-compiler.sjs']}))
-    .pipe(wrapRequire(appPath))
+    .pipe(plugins.wrapRequire(appPath))
     .pipe(plugins.size({showFiles: true}))
     .pipe(gulp.dest(appPath))
     .on('end', cb || function(){})

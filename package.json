@@ -44,6 +44,8 @@
     "karma-spec-reporter": "0.0.12",
     "run-sequence": "^0.3.6",
     "through2": "^0.4.1",
-    "gulp-plumber": "^0.6.1"
+    "gulp-plumber": "^0.6.1",
+    "gulp-watch": "^0.6.4",
+    "gulp-filter": "^0.4.1"
   }
 }

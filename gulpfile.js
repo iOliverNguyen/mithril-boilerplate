@@ -128,7 +128,7 @@ gulp.task('compileStyles', function(cb) {
   }
 });
 
-// Combine *.jsx to build/src/app
+// Combine *.jsx and store in build/src/app
 gulp.task('buildAppScriptsInject', function(cb) {
   gulp.src(appFiles.jsx, {base: 'src/app'})
     .pipe(plugins.plumber())
@@ -153,18 +153,20 @@ gulp.task('buildAppScriptsMsx', function(cb) {
     .on('error', log);
 });
 
-gulp.task('buildAppScriptPlain', function(cb) {
-  gulp.src(appFiles.js, {base: 'src'})
-    .pipe(plugins.size({showFiles: true}))
-    .pipe(gulp.dest(configs.buildSrc))
-    .on('end', cb || function(){})
-    .on('error', log);
-});
+// Note: We only support *.jsx files and ignore all *.js files.
+//
+// gulp.task('buildAppScriptPlain', function(cb) {
+//   gulp.src(appFiles.js, {base: 'src'})
+//     .pipe(plugins.size({showFiles: true}))
+//     .pipe(gulp.dest(configs.buildSrc))
+//     .on('end', cb || function(){})
+//     .on('error', log);
+// });
 
 // Combine and convert *.jsx
-// Copy *.js to build/src/app/
+// We only support *.jsx
 gulp.task('buildAppScripts', function(cb) {
-  runSequence('buildAppScriptsInject', 'buildAppScriptsMsx', 'buildAppScriptPlain', cb);
+  runSequence('buildAppScriptsInject', 'buildAppScriptsMsx', cb);
 });
 
 // Copy vendor scripts to build/public/vendor
@@ -282,6 +284,10 @@ gulp.task('compileRootFiles', function(cb) {
     .on('error', log);
 });
 
+gulp.task('testAppScripts', function(cb) {
+  // TODO
+});
+
 /* -------------------------------------------------------------------------- */
 // Major tasks
 
@@ -311,25 +317,82 @@ gulp.task('default', ['compile']);
 
 // Tasks to run whenever a source file changes
 gulp.task('watch', function(cb) {
-  // build dependence tree
-  // pass through changed files ()
-  // remember import files
-  // second run: only process changed file
-  // options: catch: false
 
-  gulp.watch('src/app/**/*.jsx')
-    .pipe(plugins.includejs({ext:'jsx'}))
-    .pipe();
+  function _indexHtml(e) {
+    // TODO: removed files
+    // gulp.start('buildIndexHtml');
+    console.log(e);
+  }
+
+  function _watch(e) {
+    console.log('all', e);
+  }
+
+  var eventColors = {
+    added: colors.green,
+    changed: colors.magenta,
+    deleted: colors.red
+  };
+  var eventBgColors = {
+    added: colors.bgGreen,
+    changed: colors.bgMagenta,
+    deleted: colors.bgRed
+  };
+
+  gulp.watch(appFiles.assets, ['buildAppAssets']);
+  gulp.watch(appFiles.less, ['buildAppStyles']);
+  gulp.watch(configs.vendorLess, ['buildVendorStyles']);
+  gulp.watch(appFiles.html, ['buildIndexHtml']);
+  gulp.watch(appFiles.root, ['buildRootFiles']);
+  gulp.watch(appFiles.jsunit, ['testAppScripts']);
+  gulp.watch(appFiles.jsx, function(e) {
+    // log(colors.());
+    // console.log('w', e);
+    var c = eventColors[e.type] || colors.white;
+    // log('[' + c(e.type) + '] ' + colors.gray(e.path));
+    var bc = eventBgColors[e.type] || colors.white;
+    log(bc(' ' + colors.black(e.type) + ' ') + ' ' + c(e.path));
+
+    // case changed: buildAppScripts
+    // case added: build added scripts
+    // case deleted: build related scripts
+    //   delete script file
+    // case renamed: delete script file, build new file
+    // compare src files to dest files, if a file is missing in source, delete it
+    if (e.type === 'deleted') {
+      var fileToDelete = path.join(configs.buildSrc, path.relative('src', e.path));
+      if (path.extname(fileToDelete) === '.jsx') {
+        clean(fileToDelete.slice(0, fileToDelete.length-4) + '.js');
+      }
+      clean(fileToDelete);
+      return;
+    }
+
+    if (e.type === 'changed') {
+      gulp.start('buildAppScripts');
+
+    } else {
+      runSequence('buildAppScripts', 'buildIndexHtml', function(){});
+    }
+  });
+
+  // var events = {added:true, deleted:true, renamed: true};
+
+  // function isAddDeleteRename(file) {
+  //   console.log(file.path, file.event);
+  //   return events[file.event];
+  // }
+
+  // // Run whole tasks, which use gulp-changed or gulp-newer to catch file
+  // // or run tasks on specific files
+  // plugins.watch({glob: appFiles.jsx}, function(files, cb) {
+  //   gulp.start('buildAppScripts', function() {
+  //     files.pipe(plugins.filter(isAddDeleteRename))
+  //       .pipe();
+  //   });
+  //   return files;
+  //   // console.log('x', cb);
+  //   // files.pipe(plugins.filter(isAddDeleteRename))
+  //   //   .on('end', cb || function(){});
+  // });
 });
-
-// Tasks to run whenever a test file changes
-gulp.task('watchtest', function() {
-
-});
-
-// Any file added or removed: indexHtml
-// root: copy, cache
-// jsx: includejs, wrap require...
-// assets: copy, cache
-// scss: app.css
-// vendor.scss: vendor

@@ -4,7 +4,7 @@
     <p>
       <input type="checkbox" onchange={m.withAttr('checked', ctrl.inStockOnly)}/>
       Only show products in stock
-    </pk>
+    </p>
   </form>
   <table>
     <thead>

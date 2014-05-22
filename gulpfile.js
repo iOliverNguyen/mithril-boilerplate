@@ -124,17 +124,7 @@ gulp.task('compileStyles', function(cb) {
   }
 });
 
-// Combine *.jsx and store in build/src/app
-// gulp.task('buildAppScriptsInject', function(cb) {
-//   gulp.src(appFiles.jsx, {base: 'src/app'})
-//     .pipe(plugins.plumber())
-//     .pipe(plugins.includeJs({ext:'jsx', cache:'appScripts'}))
-//     // .pipe(plugins.size({showFiles: true}))
-//     .pipe(gulp.dest(path.join(configs.buildSrc, 'app')))
-//     .on('end', cb || function(){})
-//     .on('error', log);
-// });
-
+// Combine *.jsx, wrap them in CommonJs style and store in build/src/app
 gulp.task('buildAppScriptsInject', function(cb) {
   var appPath = path.join(configs.buildSrc, 'app');
   gulp.src(path.join(appPath, '**/*.js'), {base: appPath})
@@ -147,26 +137,12 @@ gulp.task('buildAppScriptsInject', function(cb) {
     .on('error', log);
 });
 
-// Convert app scripts from .jsx to .js and wrap them in require style
-// gulp.task('buildAppScriptsMsx', function(cb) {
-//   var appPath = path.join(configs.buildSrc, 'app');
-//   gulp.src(appPath + '/**/*.jsx', {base: appPath})
-//     .pipe(plugins.plumber())
-//     .pipe(plugins.msx())
-//     // .pipe(plugins.sweetjs({modules: ['./res/template-compiler.sjs']}))
-//     .pipe(plugins.wrapRequire(appPath))
-//     // .pipe(plugins.size({showFiles: true}))
-//     .pipe(gulp.dest(appPath))
-//     .on('end', cb || function(){})
-//     .on('error', log);
-// });
-
+// Convert app scripts from .jsx to .js
 gulp.task('buildAppScriptsMsx', function(cb) {
   gulp.src(appFiles.jsx, {base: 'src/app'})
     .pipe(plugins.plumber())
     .pipe(plugins.msx())
     // .pipe(plugins.sweetjs({modules: ['./res/template-compiler.sjs']}))
-    // .pipe(plugins.wrapRequire())
     // .pipe(plugins.size({showFiles: true}))
     .pipe(gulp.dest(path.join(configs.buildSrc, 'app')))
     .on('end', cb || function(){})

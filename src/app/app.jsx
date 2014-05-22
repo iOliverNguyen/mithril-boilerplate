@@ -14,4 +14,3 @@ app.controller = function() {
 INCLUDE('app.view');
 
 m.module(document.body, app);
-//

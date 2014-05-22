@@ -65,9 +65,9 @@ var runSequence = require('run-sequence');
 var colors = plugins.util.colors;
 var log = plugins.util.log;
 
-function clean(filePath, cb) {
-  log('Clean ' + colors.blue(filePath));
-  gulp.src(filePath, {read: false})
+function clean(filepath, cb) {
+  log('Cleaning', colors.magenta(filepath));
+  gulp.src(filepath, {read: false})
     .pipe(plugins.clean({force: false}))
     .on('end', cb || function() {})
     .on('error', log);
@@ -130,7 +130,7 @@ gulp.task('buildAppScriptsInject', function(cb) {
   gulp.src(path.join(appPath, '**/*.js'), {base: appPath})
     .pipe(plugins.plumber())
     .pipe(plugins.wrapRequire())
-    .pipe(plugins.includeJs({ext:'js', cache:false}))
+    .pipe(plugins.includeJs({ext:'js', cache:true, showFiles:'Building'}))
     // .pipe(plugins.size({showFiles: true}))
     .pipe(gulp.dest(appPath))
     .on('end', cb || function(){})
@@ -139,12 +139,14 @@ gulp.task('buildAppScriptsInject', function(cb) {
 
 // Convert app scripts from .jsx to .js
 gulp.task('buildAppScriptsMsx', function(cb) {
+  var appPath = path.join(configs.buildSrc, 'app');
   gulp.src(appFiles.jsx, {base: 'src/app'})
     .pipe(plugins.plumber())
+    .pipe(plugins.changed(appPath, {extension: '.js'}))
     .pipe(plugins.msx())
     // .pipe(plugins.sweetjs({modules: ['./res/template-compiler.sjs']}))
     // .pipe(plugins.size({showFiles: true}))
-    .pipe(gulp.dest(path.join(configs.buildSrc, 'app')))
+    .pipe(gulp.dest(appPath))
     .on('end', cb || function(){})
     .on('error', log);
 });
@@ -331,7 +333,7 @@ gulp.task('watch', function(cb) {
   };
   function logChange(e) {
     var c = eventColors[e.type] || colors.white;
-    log('[' + c(e.type) + '] ' + colors.magenta(e.path));
+    log('[' + c(e.type) + ']', colors.magenta(path.relative(process.cwd(), e.path)));
   }
 
   gulp.watch(appFiles.assets, ['buildAppAssets']);
@@ -346,7 +348,9 @@ gulp.task('watch', function(cb) {
     if (e.type === 'deleted') {
       var delFile = path.join(configs.buildSrc, path.relative('src', e.path));
       if (path.extname(delFile) === '.jsx') {
-        clean(delFile.slice(0, delFile.length-4) + '.js');
+        clean(delFile.slice(0, delFile.length-4) + '.js', function() {
+          gulp.start('buildIndexHtml');
+        });
       }
       clean(delFile);
       return;

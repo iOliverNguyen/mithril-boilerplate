@@ -39,7 +39,7 @@ gulp build watch
 
 ### `gulp clean`
 
-Clean all file in `build` and `bin` directory.
+Clean all files in `build` and `bin` directory.
 
 ### `gulp build`
 
@@ -54,8 +54,8 @@ http-server build/public
 ### `gulp compile`
 
 Build the project and put files in `bin`.
-All stylesheets are concat to `app-***.css` and
-all scripts are combine to `main-***.css` with `***` is content hash.
+All stylesheets are concatenated to `app-***.css` and
+all scripts are combined to `main-***.css` with `***` is content hash.
 You may run the application by:
 ```
 gulp compile
@@ -64,7 +64,7 @@ http-server bin/public
 
 ### `gulp watch`
 
-Automatically build the project when a source file changes.
+Automatically build the project whenever a source file changes.
 It caches source files and only runs tasks on changed files.
 You should use `watch` together with `build`:
 ```

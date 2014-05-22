@@ -1,3 +1,2 @@
 require('app');
-// Hello world !!!
 //

@@ -3,10 +3,8 @@
 var path = require('path');
 
 var configs = {
-  buildAppCss: 'app.css',
-  buildAppJs: 'app.js',
-  buildVendorCss: 'vendor.css',
-  buildVendorJs: 'vendor.js',
+  buildAppCss: 'build/public/src/app.css',
+  buildVendorCss: 'build/public/src/vendor.css',
 
   buildAssets: 'build/public/assets/',
   buildAssetsVendor: 'build/public/assets/vendor/',
@@ -57,8 +55,6 @@ var consts = {
   livereload_port: 35729,
 };
 
-var modes = [consts.development, consts.production];
-
 /* -------------------------------------------------------------------------- */
 // Implement tasks
 
@@ -88,24 +84,24 @@ function mainScripts(basepath) {
   });
 }
 
-function buildStyles(src, options, cb) {
+function buildStyles(src, destFile, options, cb) {
   gulp.src(src)
     .pipe(plugins.plumber())
     .pipe(plugins.less(options))
-    .pipe(plugins.size({showFiles: true}))
-    .pipe(gulp.dest(configs.buildAssets))
+    // .pipe(plugins.size({showFiles: true}))
+    .pipe(gulp.dest(path.dirname(destFile)))
     .on('end', cb || function(){})
     .on('error', log);
 }
 
 // Generate build/public/assets/app-***.css
 gulp.task('buildAppStyles',function(cb) {
-  buildStyles(configs.appLess, {sourceMap:true}, cb);
+  buildStyles(configs.appLess, configs.buildAppCss, {sourceMap:true}, cb);
 });
 
 // Generate build/public/assets/vendor-***.css
 gulp.task('buildVendorStyles', function(cb) {
-  buildStyles(configs.vendorLess, {sourceMap:false}, cb);
+  buildStyles(configs.vendorLess, configs.buildVendorCss, {sourceMap:false}, cb);
 });
 
 // Generate bin/public/assets/main-***.css
@@ -114,8 +110,8 @@ gulp.task('compileStyles', function(cb) {
 
   function _compileStyles() {
     gulp.src([
-      path.join(configs.buildAssets, configs.buildVendorCss),
-      path.join(configs.buildAssets, configs.buildAppCss),
+      configs.buildVendorCss,
+      configs.buildAppCss,
     ])
       .pipe(plugins.plumber())
       .pipe(plugins.concat(configs.compileMainCss))
@@ -129,26 +125,50 @@ gulp.task('compileStyles', function(cb) {
 });
 
 // Combine *.jsx and store in build/src/app
+// gulp.task('buildAppScriptsInject', function(cb) {
+//   gulp.src(appFiles.jsx, {base: 'src/app'})
+//     .pipe(plugins.plumber())
+//     .pipe(plugins.includeJs({ext:'jsx', cache:'appScripts'}))
+//     // .pipe(plugins.size({showFiles: true}))
+//     .pipe(gulp.dest(path.join(configs.buildSrc, 'app')))
+//     .on('end', cb || function(){})
+//     .on('error', log);
+// });
+
 gulp.task('buildAppScriptsInject', function(cb) {
-  gulp.src(appFiles.jsx, {base: 'src/app'})
+  var appPath = path.join(configs.buildSrc, 'app');
+  gulp.src(path.join(appPath, '**/*.js'), {base: appPath})
     .pipe(plugins.plumber())
-    .pipe(plugins.includeJs({ext:'jsx'}))
-    .pipe(plugins.size({showFiles: true}))
-    .pipe(gulp.dest(path.join(configs.buildSrc, 'app')))
+    .pipe(plugins.wrapRequire())
+    .pipe(plugins.includeJs({ext:'js', cache:false}))
+    // .pipe(plugins.size({showFiles: true}))
+    .pipe(gulp.dest(appPath))
     .on('end', cb || function(){})
     .on('error', log);
 });
 
 // Convert app scripts from .jsx to .js and wrap them in require style
+// gulp.task('buildAppScriptsMsx', function(cb) {
+//   var appPath = path.join(configs.buildSrc, 'app');
+//   gulp.src(appPath + '/**/*.jsx', {base: appPath})
+//     .pipe(plugins.plumber())
+//     .pipe(plugins.msx())
+//     // .pipe(plugins.sweetjs({modules: ['./res/template-compiler.sjs']}))
+//     .pipe(plugins.wrapRequire(appPath))
+//     // .pipe(plugins.size({showFiles: true}))
+//     .pipe(gulp.dest(appPath))
+//     .on('end', cb || function(){})
+//     .on('error', log);
+// });
+
 gulp.task('buildAppScriptsMsx', function(cb) {
-  var appPath = path.join(configs.buildSrc, 'app');
-  gulp.src(appPath + '/**/*.jsx', {base: appPath})
+  gulp.src(appFiles.jsx, {base: 'src/app'})
     .pipe(plugins.plumber())
     .pipe(plugins.msx())
     // .pipe(plugins.sweetjs({modules: ['./res/template-compiler.sjs']}))
-    .pipe(plugins.wrapRequire(appPath))
-    .pipe(plugins.size({showFiles: true}))
-    .pipe(gulp.dest(appPath))
+    // .pipe(plugins.wrapRequire())
+    // .pipe(plugins.size({showFiles: true}))
+    .pipe(gulp.dest(path.join(configs.buildSrc, 'app')))
     .on('end', cb || function(){})
     .on('error', log);
 });
@@ -164,9 +184,8 @@ gulp.task('buildAppScriptsMsx', function(cb) {
 // });
 
 // Combine and convert *.jsx
-// We only support *.jsx
 gulp.task('buildAppScripts', function(cb) {
-  runSequence('buildAppScriptsInject', 'buildAppScriptsMsx', cb);
+  runSequence('buildAppScriptsMsx', 'buildAppScriptsInject', cb);
 });
 
 // Copy vendor scripts to build/public/vendor
@@ -184,7 +203,8 @@ gulp.task('compileScripts', function(cb) {
   function _compileScripts() {
     var glob = [].concat(
       vendorFiles.js || [],
-      [path.join(configs.buildSrc, 'app/**/*.js')]
+      [ path.join(configs.buildSrc, 'app/**/*.js'),
+        path.join('!' + configs.buildSrc, 'app/**/_*.js') ]
     );
     gulp.src(glob)
       .pipe(plugins.plumber())
@@ -202,6 +222,7 @@ gulp.task('compileScripts', function(cb) {
 // Copy vendor and app assets to build/public/assets
 gulp.task('buildAppAssets', function(cb) {
   gulp.src(appFiles.assets, {base: 'src/assets'})
+    .pipe(plugins.changed(configs.buildAssets))
     .pipe(gulp.dest(configs.buildAssets))
     .on('end', cb || function(){})
     .on('error', log);
@@ -238,18 +259,19 @@ gulp.task('buildIndexHtml', function(cb) {
     .pipe(plugins.plumber())
     .pipe(injectHtml('vendor', configs.buildPublic,
       [
-        path.join(configs.buildAssets, configs.buildVendorCss),
+        configs.buildVendorCss,
         path.join(configs.buildVendor, '**/*.js')
       ]
     ))
     .pipe(injectHtml('app', configs.buildPublic,
       [
-        path.join(configs.buildAssets, configs.buildAppCss),
-        path.join(configs.buildSrc, 'app/**/*.js')
+        configs.buildAppCss,
+        path.join(configs.buildSrc, 'app/**/*.js'),
+        path.join('!' + configs.buildSrc, 'app/**/_*.js')
       ]
     ))
     .pipe(plugins.insert.append('<script>require(\'main\');</script>'))
-    .pipe(plugins.size({showFiles:true}))
+    // .pipe(plugins.size({showFiles:true}))
     .pipe(gulp.dest(configs.buildHtml))
     .on('end', cb || function(){})
     .on('error', log);
@@ -272,6 +294,7 @@ gulp.task('compileIndexHtml', function(cb) {
 
 gulp.task('buildRootFiles', function(cb) {
   gulp.src(appFiles.root, {base:'.'})
+    .pipe(plugins.changed('build'))
     .pipe(gulp.dest('build'))
     .on('end', cb || function(){})
     .on('error', log);
@@ -318,26 +341,22 @@ gulp.task('default', ['compile']);
 // Tasks to run whenever a source file changes
 gulp.task('watch', function(cb) {
 
-  function _indexHtml(e) {
-    // TODO: removed files
-    // gulp.start('buildIndexHtml');
-    console.log(e);
-  }
-
-  function _watch(e) {
-    console.log('all', e);
-  }
-
   var eventColors = {
     added: colors.green,
     changed: colors.magenta,
-    deleted: colors.red
+    deleted: colors.red,
+    renamed: colors.green
   };
   var eventBgColors = {
     added: colors.bgGreen,
     changed: colors.bgMagenta,
-    deleted: colors.bgRed
+    deleted: colors.bgRed,
+    renamed: colors.bgGreen
   };
+  function logChange(e) {
+    var c = eventColors[e.type] || colors.white;
+    log('[' + c(e.type) + '] ' + colors.magenta(e.path));
+  }
 
   gulp.watch(appFiles.assets, ['buildAppAssets']);
   gulp.watch(appFiles.less, ['buildAppStyles']);
@@ -346,25 +365,14 @@ gulp.task('watch', function(cb) {
   gulp.watch(appFiles.root, ['buildRootFiles']);
   gulp.watch(appFiles.jsunit, ['testAppScripts']);
   gulp.watch(appFiles.jsx, function(e) {
-    // log(colors.());
-    // console.log('w', e);
-    var c = eventColors[e.type] || colors.white;
-    // log('[' + c(e.type) + '] ' + colors.gray(e.path));
-    var bc = eventBgColors[e.type] || colors.white;
-    log(bc(' ' + colors.black(e.type) + ' ') + ' ' + c(e.path));
+    logChange(e);
 
-    // case changed: buildAppScripts
-    // case added: build added scripts
-    // case deleted: build related scripts
-    //   delete script file
-    // case renamed: delete script file, build new file
-    // compare src files to dest files, if a file is missing in source, delete it
     if (e.type === 'deleted') {
-      var fileToDelete = path.join(configs.buildSrc, path.relative('src', e.path));
-      if (path.extname(fileToDelete) === '.jsx') {
-        clean(fileToDelete.slice(0, fileToDelete.length-4) + '.js');
+      var delFile = path.join(configs.buildSrc, path.relative('src', e.path));
+      if (path.extname(delFile) === '.jsx') {
+        clean(delFile.slice(0, delFile.length-4) + '.js');
       }
-      clean(fileToDelete);
+      clean(delFile);
       return;
     }
 
@@ -372,27 +380,7 @@ gulp.task('watch', function(cb) {
       gulp.start('buildAppScripts');
 
     } else {
-      runSequence('buildAppScripts', 'buildIndexHtml', function(){});
+      runSequence('buildAppScripts', 'buildIndexHtml');
     }
   });
-
-  // var events = {added:true, deleted:true, renamed: true};
-
-  // function isAddDeleteRename(file) {
-  //   console.log(file.path, file.event);
-  //   return events[file.event];
-  // }
-
-  // // Run whole tasks, which use gulp-changed or gulp-newer to catch file
-  // // or run tasks on specific files
-  // plugins.watch({glob: appFiles.jsx}, function(files, cb) {
-  //   gulp.start('buildAppScripts', function() {
-  //     files.pipe(plugins.filter(isAddDeleteRename))
-  //       .pipe();
-  //   });
-  //   return files;
-  //   // console.log('x', cb);
-  //   // files.pipe(plugins.filter(isAddDeleteRename))
-  //   //   .on('end', cb || function(){});
-  // });
 });

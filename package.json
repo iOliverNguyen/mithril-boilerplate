@@ -46,6 +46,8 @@
     "through2": "^0.4.1",
     "gulp-plumber": "^0.6.1",
     "gulp-watch": "^0.6.4",
-    "gulp-filter": "^0.4.1"
+    "gulp-filter": "^0.4.1",
+    "gulp-changed": "^0.3.0",
+    "gulp-newer": "^0.3.0"
   }
 }

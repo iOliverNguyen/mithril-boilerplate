@@ -350,8 +350,8 @@ gulp.task('watch', function(cb) {
   gulp.watch(appFiles.assets, runTasks('buildAppAssets'));
   gulp.watch(appFiles.less, runTasks('buildAppStyles', reload(configs.buildAppCss)));
   gulp.watch(configs.vendorLess, runTasks('buildVendorStyles', reload(configs.buildVendorCss)));
-  gulp.watch(appFiles.html, runTasks(['buildIndexHtml'], reload(indexHtmlPath)));
-  gulp.watch(appFiles.root, runTasks(['buildRootFiles']));
+  gulp.watch(appFiles.html, runTasks('buildIndexHtml', reload(indexHtmlPath)));
+  gulp.watch(appFiles.root, runTasks('buildRootFiles'));
   gulp.watch(appFiles.jsunit, ['testAppScripts']);
   gulp.watch(appFiles.jsx, function(e) {
     logChange(e);

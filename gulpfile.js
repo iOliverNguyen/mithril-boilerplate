@@ -11,6 +11,7 @@ var configs = {
   buildHtml: 'build/public/',
   buildPublic: 'build/public/',
   buildSrc: 'build/public/src/',
+  buildTmpSrc: 'build/tmp/src/',
   buildVendor: 'build/public/vendor/',
 
   compileMainCss: 'main.css',
@@ -126,27 +127,27 @@ gulp.task('compileStyles', function(cb) {
 
 // Combine *.jsx, wrap them in CommonJs style and store in build/src/app
 gulp.task('buildAppScriptsInject', function(cb) {
-  var appPath = path.join(configs.buildSrc, 'app');
-  gulp.src(path.join(appPath, '**/*.js'), {base: appPath})
+  var tmpSrcApp = path.join(configs.buildTmpSrc, 'app');
+  gulp.src(path.join(tmpSrcApp, '**/*.js'), {base: tmpSrcApp})
     .pipe(plugins.plumber())
     .pipe(plugins.wrapRequire())
     .pipe(plugins.includeJs({ext:'js', cache:true, showFiles:'Building'}))
     // .pipe(plugins.size({showFiles: true}))
-    .pipe(gulp.dest(appPath))
+    .pipe(gulp.dest(path.join(configs.buildSrc, 'app')))
     .on('end', cb || function(){})
     .on('error', log);
 });
 
 // Convert app scripts from .jsx to .js
 gulp.task('buildAppScriptsMsx', function(cb) {
-  var appPath = path.join(configs.buildSrc, 'app');
+  var tmpSrcApp = path.join(configs.buildTmpSrc, 'app');
   gulp.src(appFiles.jsx, {base: 'src/app'})
     .pipe(plugins.plumber())
-    .pipe(plugins.changed(appPath, {extension: '.js'}))
+    .pipe(plugins.changed(tmpSrcApp, {extension: '.js'}))
     .pipe(plugins.msx())
     // .pipe(plugins.sweetjs({modules: ['./res/template-compiler.sjs']}))
     // .pipe(plugins.size({showFiles: true}))
-    .pipe(gulp.dest(appPath))
+    .pipe(gulp.dest(tmpSrcApp))
     .on('end', cb || function(){})
     .on('error', log);
 });
@@ -346,13 +347,15 @@ gulp.task('watch', function(cb) {
     logChange(e);
 
     if (e.type === 'deleted') {
-      var delFile = path.join(configs.buildSrc, path.relative('src', e.path));
+      var delFile = path.relative('src', e.path);
+      clean(path.join(configs.buildTmpSrc, delFile));
       if (path.extname(delFile) === '.jsx') {
-        clean(delFile.slice(0, delFile.length-4) + '.js', function() {
+        var delJs = delFile.slice(0, delFile.length-4) + '.js';
+        clean(path.join(configs.buildTmpSrc, delJs));
+        clean(path.join(configs.buildSrc, delJs), function() {
           gulp.start('buildIndexHtml');
         });
       }
-      clean(delFile);
       return;
     }
 

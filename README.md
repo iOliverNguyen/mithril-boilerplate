@@ -45,7 +45,7 @@ gulp build watch
 * Client side modules wrapped in CommonJs
 * Watch with cache (only rebuild changed files)
 * LiveReload
-* Concat and minify stylesheets and scripts
+* Concat and minify stylesheets and scripts for production
 * Unit testing will be supported soon
 
 ## Commands
@@ -92,18 +92,17 @@ These tasks describe specific steps in building process:
 * `gulp buildVendorStyles`
 * `gulp buildAppScriptsInject`
 * `gulp buildAppScriptsMsx`
-* `gulp buildAppScriptPlain`
 * `gulp buildAppScripts`
 * `gulp buildVendorScripts`
 * `gulp buildAppAssets`
 * `gulp buildVendorAssets`
 * `gulp buildIndexHtml`
-* `gulp compileIndexHtml`
 * `gulp buildRootFiles`
 * `gulp compileStyles`
 * `gulp compileScripts`
 * `gulp compileAssets`
 * `gulp compileRootFiles`
+* `gulp compileIndexHtml`
 
 ## // TODO
 

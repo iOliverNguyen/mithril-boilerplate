@@ -1,6 +1,6 @@
 # mithril-boilerplate
 
-> Boilerplate code for mithril.js project
+> Well structured boilerplate code for quickly starting new [Mithril.js](http://lhorie.github.io/mithril) projects
 
 ## Quick start
 
@@ -29,11 +29,24 @@ You may run the application by either of these commands:
 * `http-server build/public`
 * `http-server bin/public`
 
-To automatically build project when a source file change:
+To automatically build project whenever a source file changes:
 
 ```
 gulp build watch
 ```
+
+## Features
+
+* Gulpfile
+* Bower
+* LESS & Bootstrap (easy to swap with your favourite tools)
+* [JSX](http://lhorie.github.io/mithril/tools.html) (write HTML tags inside .jsx file)
+* [INCLUDE()](https://github.com/ng-vu/gulp-include-js) JavaScript files
+* Client side modules wrapped in CommonJs
+* Watch with cache (only rebuild changed files)
+* LiveReload
+* Concat and minify stylesheets and scripts
+* Unit testing will be supported soon
 
 ## Commands
 
@@ -92,11 +105,11 @@ These tasks describe specific steps in building process:
 * `gulp compileAssets`
 * `gulp compileRootFiles`
 
-## Watch, live reload and test
+## // TODO
 
-```
-gulp build watch
-```
+* Unit testing
+* Sample project
+* Coffee script
 
 ## Note
 

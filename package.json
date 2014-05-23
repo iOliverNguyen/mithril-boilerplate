@@ -1,18 +1,18 @@
 {
-  "name": "mithril-seed",
-  "version": "0.1.0",
+  "name": "mithril-boilerplate",
+  "version": "0.1.2",
   "author": "Vu Nguyen <ng-vu@liti.ws>",
-  "description": "Boilerplate code for mithril.js project",
-  "homepage": "http://github.com/ng-vu/mithril-seed",
+  "description": "Well structured boilerplate code for quickly starting new Mithril.js projects",
+  "homepage": "http://github.com/ng-vu/mithril-boilerplate",
   "license": [
     {
       "type": "MIT",
-      "url": "http://github.com/ng-vu/mithril-seed/blob/master/LICENSE"
+      "url": "http://github.com/ng-vu/mithril-boilerplate/blob/master/LICENSE"
     }
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/ng-vu/mithril-seed.git"
+    "url": "git://github.com/ng-vu/mithril-boilerplate.git"
   },
   "dependencies": {},
   "devDependencies": {

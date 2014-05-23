@@ -1,6 +1,6 @@
 {
-  "name": "mithril-seed",
-  "version": "0.1.0",
+  "name": "mithril-boilerplate",
+  "version": "0.1.2",
   "devDependencies": {
     "mithril": "~0.1.12",
     "min-require": "~0.1.1",

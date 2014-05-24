@@ -1,16 +1,9 @@
 var home = require('home/home');
-var app = {};
+var about = require('about/about');
+var layout = require('layout/layout');
 
-app.ProductList = function() {
-  return m.request({method: 'GET', url: '../products.json'});
-};
-
-app.controller = function() {
-  this.products = app.ProductList();
-  this.filterText = m.prop('');
-  this.inStockOnly = m.prop(false);
-};
-
-INCLUDE('app.view');
-
-m.module(document.body, app);
+m.route.mode = 'hash';
+m.route(document.body, '/', {
+  '/': layout(home),
+  '/about': layout(about)
+});

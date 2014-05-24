@@ -1,7 +1,5 @@
 // User configs
 
-var path = require('path');
-
 var configs = {
   buildAppCss: 'build/public/src/app.css',
   buildVendorCss: 'build/public/src/vendor.css',
@@ -25,8 +23,6 @@ var configs = {
 
   appLess: 'src/less/app.less',
   vendorLess: 'src/less/vendor.less',
-
-  mainScripts: ['app/main.js']
 };
 
 var appFiles = {
@@ -59,7 +55,9 @@ var consts = {
 /* -------------------------------------------------------------------------- */
 // Implement tasks
 
+var fs = require('fs');
 var gulp = require('gulp');
+var path = require('path');
 var plugins = require('gulp-load-plugins')();
 var runSequence = require('run-sequence');
 
@@ -91,7 +89,6 @@ function buildStyles(src, destFile, options, cb) {
     .pipe(plugins.less(options))
     // .pipe(plugins.size({showFiles: true}))
     .pipe(gulp.dest(path.dirname(destFile)))
-    // .pipe(lrServer)
     .on('end', cb || function(){})
     .on('error', log);
 }
@@ -135,7 +132,6 @@ gulp.task('buildAppScriptsInject', function(cb) {
     .pipe(plugins.includeJs({ext:'js', cache:true, showFiles:'Building'}))
     // .pipe(plugins.size({showFiles: true}))
     .pipe(gulp.dest(path.join(configs.buildSrc, 'app')))
-    // .pipe(lrServer)
     .on('end', cb || function(){})
     .on('error', log);
 });
@@ -173,7 +169,6 @@ gulp.task('buildAppScripts', function(cb) {
 gulp.task('buildVendorScripts', function(cb) {
   gulp.src(vendorFiles.js, {base: 'vendor'})
     .pipe(gulp.dest('build/public/vendor'))
-    // .pipe(lrServer)
     .on('end', cb || function(){})
     .on('error', log);
 });
@@ -256,7 +251,6 @@ gulp.task('buildIndexHtml', function(cb) {
     .pipe(plugins.insert.append('<script src="//localhost:' + consts.livereloadPort + '/livereload.js"></script>'))
     // .pipe(plugins.size({showFiles:true}))
     .pipe(gulp.dest(configs.buildHtml))
-    // .pipe(lrServer)
     .on('end', cb || function(){})
     .on('error', log);
 });
@@ -331,7 +325,7 @@ gulp.task('watch', function(cb) {
     deleted: colors.red,
     renamed: colors.green
   };
-  function logChange(e) {
+  function logChanged(e) {
     var c = eventColors[e.type] || colors.white;
     log('[' + c(e.type) + ']', colors.magenta(path.relative(process.cwd(), e.path)));
   }
@@ -354,7 +348,7 @@ gulp.task('watch', function(cb) {
   gulp.watch(appFiles.root, runTasks('buildRootFiles'));
   gulp.watch(appFiles.jsunit, ['testAppScripts']);
   gulp.watch(appFiles.jsx, function(e) {
-    logChange(e);
+    logChanged(e);
 
     if (e.type === 'deleted') {
       var delFile = path.relative('src', e.path);
@@ -369,11 +363,7 @@ gulp.task('watch', function(cb) {
       return;
     }
 
-    if (e.type === 'changed') {
-      runSequence('buildAppScripts', reload(indexHtmlPath));
-
-    } else {
-      runSequence('buildAppScripts', 'buildIndexHtml', reload(indexHtmlPath));
-    }
+    if (e.type === 'changed') runSequence('buildAppScripts', reload(indexHtmlPath));
+    else runSequence('buildAppScripts', 'buildIndexHtml', reload(indexHtmlPath));
   });
 });

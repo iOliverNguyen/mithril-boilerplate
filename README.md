@@ -67,7 +67,7 @@ http-server build/public
 ### `gulp compile`
 
 Build the project and put files in `bin`.
-All stylesheets are concatenated to `app-***.css` and
+All stylesheets are concatenated to `main-***.css` and
 all scripts are combined to `main-***.css` with `***` is content hash.
 You may run the application by:
 ```

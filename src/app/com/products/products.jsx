@@ -1,7 +1,7 @@
 var u = require('com/u');
 
 function ProductList() {
-  return m.request({method:'GET', url:'/products.json'});
+  return m.request({method:'GET', url:'products.json'});
 }
 
 function controller() {

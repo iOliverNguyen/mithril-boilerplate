@@ -4,7 +4,7 @@
     <h3>What is Mithril?</h3>
     <p>
       Mithril is a client-side MVC framework - a tool to organize code in a way that is easy to think about and to maintain.<br/>
-      For more information, go to <a href="http://lhorie.github.io/">official website</a> or read <a href="http://lhorie.github.io/mithril/getting-started.html">Getting Started</a>.
+      The framework is created by Leo Horie. For more information, go to <a href="http://lhorie.github.io/">official website</a> or read <a href="http://lhorie.github.io/mithril/getting-started.html">Getting Started</a>.
     </p>
   </div>
 </div>,

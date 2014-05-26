@@ -1,14 +1,27 @@
-function layout(contentModule) {
+var u = require('com/u');
+
+function layout($module) {
 
   function controller() {
-    this.contentCtrl = new contentModule.controller();
-
-    this.tabActive = function(r) {
-      return m.route() === r? 'active': '';
-    };
+    this.com = u.init($module);
+    this.tabs = [{href:'/',label:'Home'},{href:'/about',label:'About'}];
   }
 
   function view(ctrl) {
+    var tabs = [];
+    for (var i=0; i < ctrl.tabs.length; i++) {
+      var tab = ctrl.tabs[i];
+      tabs.push(
+        <li class={isActive(tab.href)}>
+          <a href={tab.href} config={m.route}>{tab.label}</a>
+        </li>
+      );
+    }
+
+    function isActive(r) {
+      return m.route() === r? 'active': '';
+    }
+
     return INCLUDE('layout/layout.tpl');
   }
 

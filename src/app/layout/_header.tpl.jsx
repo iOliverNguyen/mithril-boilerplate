@@ -5,8 +5,7 @@
     </div>
     <nav>
       <ul class="nav navbar-nav">
-        <li class={ctrl.tabActive('/')}><a href="/" config={m.route}>Home</a></li>
-        <li class={ctrl.tabActive('/about')}><a href="/about" config={m.route}>About</a></li>
+        {tabs}
         <li><a href="https://github.com/ng-vu/mithril-boilerplate">GitHub</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
